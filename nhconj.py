@@ -11,8 +11,8 @@ import traceback
 
 def main():
     print('Commands:')
-    print('  unte <te_form> - Convert て-form verb or adjective -> dict-form')
-    print('  te <dict_verb> - Convert dict-form verb -> て-form')
+    print('  unte <te_form> - Convert て-form verb or adjective -> dict-form.')
+    print('  te <dict_verb> - Convert dict-form verb -> て-form.')
     print()
     print('Metacommands:')
     print('  repeat <command> - Run <command> multiple times.')
@@ -110,10 +110,10 @@ def unte(te_form):
 # Given a verb in dictionary form, returns its possible て-forms.
 # Rules are based on Genki I, chapter 6.
 def te(dict_verb):
-    if dict_verb in ['する']:
-        return ['して']
-    if dict_verb in ['くる']:
-        return ['きて']
+    if dict_verb[-2:] in ['する']:
+        return [dict_verb[:-2] + 'して']
+    if dict_verb[-2:] in ['くる']:
+        return [dict_verb[:-2] + 'きて']
     
     if dict_verb in ['いく', '行く']:
         return [dict_verb[:-1] + 'って']
