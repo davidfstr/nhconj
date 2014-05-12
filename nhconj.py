@@ -1,9 +1,51 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
+#
+# Conjugates verbs and adjectives in Japanese.
+# 
+# @author David Foster
+# 
 
 import sys
+import traceback
+
+def main():
+    print('Commands:')
+    print('  unte <te_form> - Convert て-form verb or adjective -> dict-form')
+    print('  te <dict_verb> - Convert dict-form verb -> て-form')
+    print()
+    print('Metacommands:')
+    print('  repeat <command> - Run <command> multiple times.')
+    print('  quit - Quit the program.')
+    print()
+    
+    try:
+        while True:
+            args = input('> ').split(' ')
+            
+            if args == ['']:
+                break
+            else:
+                cmd = args[0]
+                if cmd in globals():
+                    try:
+                        result = globals()[cmd](*args[1:])
+                    except Exception as e:
+                        traceback.print_exc()
+                    else:
+                        if result is not None:
+                            print(result)
+                else:
+                    print('*** Unknown command: ' + cmd)
+    except KeyboardInterrupt as e:
+        # User typed Control-C
+        print()
+        pass
+    except EOFError as e:
+        # User typed Control-D
+        print()
+        pass
+
 
 # Given a verb in て-form, returns its possible dictionary forms.
 # 
@@ -64,15 +106,6 @@ def unte(te_form):
     raise ValueError(
         'Expected て-form to end with て or で: ' + te_form)
 
-def unte_cli():
-    print 'て-form:', 
-    te_form = raw_input().decode(sys.stdin.encoding)
-    
-    possible_dict_forms = unte(te_form)
-    print
-    print 'Possible dict forms:'
-    for x in possible_dict_forms:
-        print '  ' + x
 
 # Given a verb in dictionary form, returns its possible て-forms.
 # Rules are based on Genki I, chapter 6.
@@ -105,12 +138,29 @@ def te(dict_verb):
     raise ValueError(
         'Expected verb in dictionary form: ' + dict_verb)
 
-def te_cli():
-    print 'Dict-verb:', 
-    dict_verb = raw_input().decode(sys.stdin.encoding)
+
+def repeat(cmd):
+    if cmd not in globals():
+        print('*** Unknown command: ' + cmd)
+        return
     
-    possible_te_forms = te(dict_verb)
-    print
-    print 'Possible て-forms:'
-    for x in possible_te_forms:
-        print '  ' + x
+    while True:
+        args = input('>> ').split(' ')
+        if args == ['']:
+            break
+        else:
+            try:
+                result = globals()[cmd](*args)
+            except Exception as e:
+                traceback.print_exc()
+            else:
+                if result is not None:
+                    print(result)
+
+
+def quit():
+    raise KeyboardInterrupt
+
+
+if __name__ == '__main__':
+    main()
