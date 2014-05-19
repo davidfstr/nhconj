@@ -58,20 +58,6 @@ def main():
 # NOTE: Does not recognize all *negative* て-forms,
 #       since I don't know all the rules.
 def unte(te_form):
-    # Reverse い-adjectives in て-form
-    if te_form.endswith('くて'):  # based on Wikipedia rules
-        prefix = te_form[:-2]
-        return [prefix + 'い']
-    if te_form.endswith('くなって'):  # based on empirical observation
-        prefix = te_form[:-4]
-        return [prefix + 'い + negative']
-    
-    # Reverse な-adjectives in て-form
-    if te_form.endswith('で'):  # based on Wikipedia rules
-        prefix = te_form[:-1]
-        return [prefix]
-    # TODO: What about the negative て-form for な-adjectives?
-    
     # Reverse verbs in て-form,
     # based on rules from Genki I, chapter 7
     if te_form == 'いって':
@@ -102,6 +88,20 @@ def unte(te_form):
     if te_form.endswith('て'):
         prefix = te_form[:-1]
         return [prefix + 'る']
+    
+    # Reverse い-adjectives in て-form
+    if te_form.endswith('くて'):  # based on Wikipedia rules
+        prefix = te_form[:-2]
+        return [prefix + 'い']
+    if te_form.endswith('くなって'):  # based on empirical observation
+        prefix = te_form[:-4]
+        return [prefix + 'い + negative']
+    
+    # Reverse な-adjectives in て-form
+    if te_form.endswith('で'):  # based on Wikipedia rules
+        prefix = te_form[:-1]
+        return [prefix]
+    # TODO: What about the negative て-form for な-adjectives?
     
     raise ValueError(
         'Expected て-form to end with て or で: ' + te_form)
