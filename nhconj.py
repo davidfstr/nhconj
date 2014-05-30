@@ -49,18 +49,19 @@ def main():
 
 # Given a verb in て-form, returns its possible dictionary forms.
 # 
-# Also, given an adjective in て-form, makes a best-effort attempt to return
-# its single possible dictionary form.
-# (ex: 'あつくなって' -> ['あつい + negative'])
-# 
-# NOTE: Does not recognize all *adjectives* in て-form,
-#       since I don't know all the rules.
-# NOTE: Does not recognize all *negative* て-forms,
-#       since I don't know all the rules.
+# Also, given an adjective in て-form, returns its single possible
+# dictionary form. (ex: 'あつくなって' -> ['あつい + negative'])
 def unte(te_form):
+    # Reverse irr-adjectives in て-form
+    # based on rules from Genki I, 2nd Ed, §7.3
+    if te_form == 'よくて':
+        return ['いい']
+    
     # Reverse い-adjectives in て-form
+    # based on rules from Genki I, 2nd Ed, §7.3
+    # 
     # NOTE: Must be before the 〜て rule below
-    if te_form.endswith('くて'):  # based on Wikipedia rules
+    if te_form.endswith('くて'):
         prefix = te_form[:-2]
         return [prefix + 'い']
     if te_form.endswith('くなって'):  # based on empirical observation
@@ -68,7 +69,7 @@ def unte(te_form):
         return [prefix + 'い + negative']
     
     # Reverse verbs in て-form,
-    # based on rules from Genki I, chapter 7
+    # based on rules from Genki I, 2nd Ed, §6.1
     if te_form == 'いって':
         return ['いく']
     if te_form.endswith('って'):
@@ -99,8 +100,10 @@ def unte(te_form):
         return [prefix + 'る']
     
     # Reverse な-adjectives in て-form
+    # based on rules from Genki I, 2nd Ed, §7.3
+    # 
     # NOTE: Must be after the 〜んで rule above
-    if te_form.endswith('で'):  # based on Wikipedia rules
+    if te_form.endswith('で'):
         prefix = te_form[:-1]
         return [prefix]
     # TODO: What about the negative て-form for な-adjectives?
@@ -110,7 +113,7 @@ def unte(te_form):
 
 
 # Given a verb in dictionary form, returns its possible て-forms.
-# Rules are based on Genki I, chapter 6.
+# Rules are based on Genki I, 2nd Ed, §6.1.
 def te(dict_verb):
     if dict_verb[-2:] in ['する']:
         return [dict_verb[:-2] + 'して']
