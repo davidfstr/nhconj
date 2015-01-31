@@ -97,42 +97,66 @@ def stem(dict_verb):
     
     if dict_verb[-1] in ['る']:
         return [
-            dict_verb[:-1] + ' (if る-verb)',
-            dict_verb[:-1] + 'り (if う-verb)'
+            '(if る-verb) ' + dict_verb[:-1],
+            '(if う-verb) ' + dict_verb[:-1] + 'り'
         ]
     
     # ~u -> ~i
+    return [_replace_u_with(dict_verb, 'i')]
+
+def _replace_u_with(dict_verb, vowel):
     last = romaji(dict_verb[-1])
     if last[-1] not in ['u']:
         raise ValueError(
             'Expected verb in dictionary form: ' + dict_verb)
-    last = last[:-1] + 'i'
+    last = last[:-1] + vowel
     last = unromaji(last)
     return dict_verb[:-1] + last
 
 
-# Given a verb in dictionary form, returns its possible present-affirmative forms.
 # Rules are based on Genki I, 2nd Ed, §3.1.
-def present(dict_verb):
+def long_present_aff(dict_verb):
     return [s + 'ます' for s in stem(dict_verb)]
 
 
-# Given a verb in dictionary form, returns its possible present-negative forms.
 # Rules are based on Genki I, 2nd Ed, §3.1.
-def present_neg(dict_verb):
+def long_present_neg(dict_verb):
     return [s + 'ません' for s in stem(dict_verb)]
 
 
-# Given a verb in dictionary form, returns its possible past-affirmative forms.
 # Rules are based on Genki I, 2nd Ed, §4.4.
-def past(dict_verb):
+def long_past_aff(dict_verb):
     return [s + 'ました' for s in stem(dict_verb)]
 
 
 # Given a verb in dictionary form, returns its possible past-negative forms.
 # Rules are based on Genki I, 2nd Ed, §4.4.
-def past_neg(dict_verb):
+def long_past_neg(dict_verb):
     return [s + 'ませんでした' for s in stem(dict_verb)]
+
+
+# Rules are based on Genki I, 2nd Ed, §8.1.
+def short_present_aff(dict_verb):
+    return [dict_verb]
+
+
+# Rules are based on Genki I, 2nd Ed, §8.1.
+def short_present_neg(dict_verb):
+    if dict_verb[-2:] in ['する']:
+        return [dict_verb[:-2] + 'しない']
+    if dict_verb[-2:] in ['くる']:
+        return [dict_verb[:-2] + 'こない']
+    if dict_verb == 'ある':
+        return ['ない']
+    
+    if dict_verb[-1] in ['る']:
+        return [
+            '(if る-verb) ' + dict_verb[:-1] + 'ない',
+            '(if う-verb) ' + dict_verb[:-1] + 'らない'
+        ]
+    
+    # ~u -> ~anai
+    return [_replace_u_with(dict_verb, 'a') + 'ない']
 
 
 # Given a verb in て-form, returns its possible dictionary forms.
@@ -213,8 +237,8 @@ def te(dict_verb):
     
     if dict_verb[-1] in ['る']:
         return [
-            dict_verb[:-1] + 'て (if る-verb)',
-            dict_verb[:-1] + 'って (if う-verb)'
+            '(if る-verb) ' + dict_verb[:-1] + 'て',
+            '(if う-verb) ' + dict_verb[:-1] + 'って'
         ]
     
     if dict_verb[-1] in ['う', 'つ', 'る']:
