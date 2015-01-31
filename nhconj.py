@@ -8,57 +8,6 @@
 import sys
 import traceback
 
-def main():
-    print('Commands:')
-    print('  unte <te_form> - Convert て-form verb or adjective -> dict-form.')
-    print('  te <dict_verb> - Convert dict-form verb -> て-form.')
-    print()
-    print('Metacommands:')
-    print('  repeat <command> - Run <command> multiple times.')
-    print('  quit - Quit the program.')
-    print()
-    
-    try:
-        while True:
-            args = input('> ').split(' ')
-            
-            if args == ['']:
-                break
-            else:
-                cmd = args[0]
-                if cmd in globals():
-                    _run_command(globals()[cmd], args[1:])
-                else:
-                    print('*** Unknown command: ' + cmd)
-    except KeyboardInterrupt as e:
-        # User typed Control-C
-        print()
-        pass
-    except EOFError as e:
-        # User typed Control-D
-        print()
-        pass
-
-def _run_command(func, args):
-    try:
-        if hasattr(func, 'expects_verb_entry'):
-            if args[0].endswith('る'):
-                result1 = func({ 'dict_verb': args[0], 'is_ru_verb': True })
-                result2 = func({ 'dict_verb': args[0], 'is_ru_verb': False })
-                result = [
-                    '(if る-verb) ' + result1,
-                    '(if う-verb) ' + result2
-                ]
-            else:
-                result = [func({ 'dict_verb': args[0], 'is_ru_verb': False })]
-        else:
-            result = func(*args)
-    except Exception as e:
-        traceback.print_exc()
-    else:
-        if result is not None:
-            print(result)
-
 
 # Decorator to mark CLI functions that expect a verb entry rather
 # than just a plain string.
@@ -319,6 +268,60 @@ def te(verb_entry):
     
     raise ValueError(
         'Expected verb in dictionary form: ' + dict_verb)
+
+# ------------------------------------------------------------------------------
+# CLI
+
+def main():
+    print('Commands:')
+    print('  unte <te_form> - Convert て-form verb or adjective -> dict-form.')
+    print('  te <dict_verb> - Convert dict-form verb -> て-form.')
+    print()
+    print('Metacommands:')
+    print('  repeat <command> - Run <command> multiple times.')
+    print('  quit - Quit the program.')
+    print()
+    
+    try:
+        while True:
+            args = input('> ').split(' ')
+            
+            if args == ['']:
+                break
+            else:
+                cmd = args[0]
+                if cmd in globals():
+                    _run_command(globals()[cmd], args[1:])
+                else:
+                    print('*** Unknown command: ' + cmd)
+    except KeyboardInterrupt as e:
+        # User typed Control-C
+        print()
+        pass
+    except EOFError as e:
+        # User typed Control-D
+        print()
+        pass
+
+def _run_command(func, args):
+    try:
+        if hasattr(func, 'expects_verb_entry'):
+            if args[0].endswith('る'):
+                result1 = func({ 'dict_verb': args[0], 'is_ru_verb': True })
+                result2 = func({ 'dict_verb': args[0], 'is_ru_verb': False })
+                result = [
+                    '(if る-verb) ' + result1,
+                    '(if う-verb) ' + result2
+                ]
+            else:
+                result = [func({ 'dict_verb': args[0], 'is_ru_verb': False })]
+        else:
+            result = func(*args)
+    except Exception as e:
+        traceback.print_exc()
+    else:
+        if result is not None:
+            print(result)
 
 
 def repeat(cmd):
