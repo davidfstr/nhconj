@@ -61,30 +61,31 @@ HIRAGANA_ROWS = (
     ('w', 'わ　　　を'),
 )
 
+ROMAJI_FOR_KANA = {};
+ROMAJI_FOR_KANA['ん'] = 'n'
+for (prefix, kanas) in HIRAGANA_ROWS:
+    for i in range(len(HIRAGANA_COLS)):
+        romaji = prefix + HIRAGANA_COLS[i]
+        kana = kanas[i]
+        ROMAJI_FOR_KANA[kana] = romaji
+
+KANA_FOR_ROMAJI = {rj : kana for (kana, rj) in ROMAJI_FOR_KANA.items()}
+
 def romaji(kana_character):
-    if kana_character == 'ん':
-        return 'n';
-    
-    for (prefix, kanas) in HIRAGANA_ROWS:
-        if kana_character in kanas:
-            return prefix + HIRAGANA_COLS[kanas.index(kana_character)]
-    
-    raise ValueError(
-        'Expected single kana character: ' + kana_character)
+    romaji = ROMAJI_FOR_KANA.get(kana_character)
+    if romaji is not None:
+        return romaji
+    else:
+        raise ValueError(
+            'Expected single kana character: ' + kana_character)
 
 def unromaji(romaji_character_pair):
-    if romaji_character_pair == 'n':
-        return 'ん'
-    if romaji_character_pair in HIRAGANA_COLS:
-        return HIRAGANA_ROWS[0][HIRAGANA_COLS.index(romaji_character_pair)]
-        
-    if len(romaji_character_pair) == 2 and romaji_character_pair[1] in HIRAGANA_COLS:
-        for (prefix, kanas) in HIRAGANA_ROWS:
-            if romaji_character_pair[0] == prefix:
-                return kanas[HIRAGANA_COLS.index(romaji_character_pair[1])]
-    
-    raise ValueError(
-        'Expected romaji character pair: ' + romaji_character_pair)
+    kana = KANA_FOR_ROMAJI.get(romaji_character_pair)
+    if kana is not None:
+        return kana
+    else:
+        raise ValueError(
+            'Expected romaji character pair: ' + romaji_character_pair)
 
 
 # Given a verb in dictionary form, returns its possible stem-forms.
