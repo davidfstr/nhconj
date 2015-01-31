@@ -79,6 +79,12 @@ HIRAGANA_ROWS = (
     ('r', 'らりるれろ'),
     ('y', 'や　ゆ　よ'),
     ('w', 'わ　　　を'),
+    
+    ('g', 'がぎぐげご'),
+    ('z', 'ざじずぜぞ'),
+    ('d', 'だぢづでど'),
+    ('b', 'ばびぶべぼ'),
+    ('p', 'ぱぴぷぺぽ'),
 )
 
 ROMAJI_FOR_KANA = {};
@@ -212,7 +218,7 @@ def tai(verb_entry):
 # Rules are based on Genki I, 2nd Ed, §11.2.
 @expects_verb_entry
 def tari(verb_entry):
-    return short_present_aff(verb_entry) + 'り'
+    return short_past_aff(verb_entry) + 'り'
 
 
 # Given a verb in て-form, returns its possible dictionary forms.
