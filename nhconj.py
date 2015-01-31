@@ -169,6 +169,16 @@ def short_past_neg(dict_verb):
     return [spn[:-1] + 'かった' for spn in short_present_neg(dict_verb)]
 
 
+# Rules are based on Genki I, 2nd Ed, §11.1.
+def tai(dict_verb):
+    return [s + 'たい' for s in stem(dict_verb)]
+
+
+# Rules are based on Genki I, 2nd Ed, §11.2.
+def tari(dict_verb):
+    return [spa + 'り' for spa in short_present_aff(dict_verb)]
+
+
 # Given a verb in て-form, returns its possible dictionary forms.
 # 
 # Also, given an adjective in て-form, returns its single possible
