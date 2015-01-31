@@ -47,6 +47,82 @@ def main():
         pass
 
 
+HIRAGANA_COLS = 'aiueo'
+HIRAGANA_ROWS = (
+    ('' , 'あいうえお'),
+    ('k', 'かきくけこ'),
+    ('s', 'さしすせそ'),
+    ('t', 'たちつてと'),
+    ('n', 'なにぬねの'),
+    ('h', 'はひふへほ'),
+    ('m', 'まみむめも'),
+    ('r', 'らりるれろ'),
+    ('y', 'や　ゆ　よ'),
+    ('w', 'わ　　　を'),
+)
+
+def romaji(kana_character):
+    if kana_character == 'ん':
+        return 'n';
+    
+    for (prefix, kanas) in HIRAGANA_ROWS:
+        if kana_character in kanas:
+            return prefix + HIRAGANA_COLS[kanas.index(kana_character)]
+    
+    raise ValueError(
+        'Expected single kana character: ' + kana_character)
+
+def unromaji(romaji_character_pair):
+    if romaji_character_pair == 'n':
+        return 'ん'
+    if romaji_character_pair in HIRAGANA_COLS:
+        return HIRAGANA_ROWS[0][HIRAGANA_COLS.index(romaji_character_pair)]
+        
+    if len(romaji_character_pair) == 2 and romaji_character_pair[1] in HIRAGANA_COLS:
+        for (prefix, kanas) in HIRAGANA_ROWS:
+            if romaji_character_pair[0] == prefix:
+                return kanas[HIRAGANA_COLS.index(romaji_character_pair[1])]
+    
+    raise ValueError(
+        'Expected romaji character pair: ' + romaji_character_pair)
+
+
+# Given a verb in dictionary form, returns its possible stem-forms.
+# Rules are based on Genki I, 2nd Ed, §3.1.
+def stem(dict_verb):
+    if dict_verb[-2:] in ['する']:
+        return [dict_verb[:-2] + 'し']
+    if dict_verb[-2:] in ['くる']:
+        return [dict_verb[:-2] + 'き']
+    
+    if dict_verb[-1] in ['る']:
+        return [
+            dict_verb[:-1] + ' (if る-verb)',
+            dict_verb[:-1] + 'り (if う-verb)'
+        ]
+    
+    # ~u -> ~i
+    last = romaji(dict_verb[-1])
+    if last[-1] not in ['u']:
+        raise ValueError(
+            'Expected verb in dictionary form: ' + dict_verb)
+    last = last[:-1] + 'i'
+    last = unromaji(last)
+    return dict_verb[:-1] + last
+
+
+# Given a verb in dictionary form, returns its possible present-affirmative forms.
+# Rules are based on Genki I, 2nd Ed, §3.1.
+def present(dict_verb):
+    return stem(dict_verb) + 'ます'
+
+
+# Given a verb in dictionary form, returns its possible present-negative forms.
+# Rules are based on Genki I, 2nd Ed, §3.1.
+def present_neg(dict_verb):
+    return stem(dict_verb) + 'ません'
+
+
 # Given a verb in て-form, returns its possible dictionary forms.
 # 
 # Also, given an adjective in て-form, returns its single possible
@@ -142,7 +218,7 @@ def te(dict_verb):
     
     raise ValueError(
         'Expected verb in dictionary form: ' + dict_verb)
-
+    
 
 def repeat(cmd):
     if cmd not in globals():
