@@ -114,13 +114,25 @@ def stem(dict_verb):
 # Given a verb in dictionary form, returns its possible present-affirmative forms.
 # Rules are based on Genki I, 2nd Ed, §3.1.
 def present(dict_verb):
-    return stem(dict_verb) + 'ます'
+    return [s + 'ます' for s in stem(dict_verb)]
 
 
 # Given a verb in dictionary form, returns its possible present-negative forms.
 # Rules are based on Genki I, 2nd Ed, §3.1.
 def present_neg(dict_verb):
-    return stem(dict_verb) + 'ません'
+    return [s + 'ません' for s in stem(dict_verb)]
+
+
+# Given a verb in dictionary form, returns its possible past-affirmative forms.
+# Rules are based on Genki I, 2nd Ed, §4.4.
+def past(dict_verb):
+    return [s + 'ました' for s in stem(dict_verb)]
+
+
+# Given a verb in dictionary form, returns its possible past-negative forms.
+# Rules are based on Genki I, 2nd Ed, §4.4.
+def past_neg(dict_verb):
+    return [s + 'ませんでした' for s in stem(dict_verb)]
 
 
 # Given a verb in て-form, returns its possible dictionary forms.
