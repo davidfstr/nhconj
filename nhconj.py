@@ -102,14 +102,14 @@ def stem(dict_verb):
         ]
     
     # ~u -> ~i
-    return [_replace_u_with(dict_verb, 'i')]
+    return [_replace_vowel_suffix(dict_verb, 'u', 'i')]
 
-def _replace_u_with(dict_verb, vowel):
+def _replace_vowel_suffix(dict_verb, old_vowel, new_vowel):
     last = romaji(dict_verb[-1])
-    if last[-1] not in ['u']:
+    if last[-1] != old_vowel:
         raise ValueError(
             'Expected verb in dictionary form: ' + dict_verb)
-    last = last[:-1] + vowel
+    last = last[:-1] + new_vowel
     last = unromaji(last)
     return dict_verb[:-1] + last
 
@@ -156,7 +156,17 @@ def short_present_neg(dict_verb):
         ]
     
     # ~u -> ~anai
-    return [_replace_u_with(dict_verb, 'a') + 'ない']
+    return [_replace_vowel_suffix(dict_verb, 'u', 'a') + 'ない']
+
+
+# Rules are based on Genki I, 2nd Ed, §9.1.
+def short_past_aff(dict_verb):
+    return [_replace_vowel_suffix(v_te, 'e', 'a') for v_te in te(dict_verb)]
+
+
+# Rules are based on Genki I, 2nd Ed, §9.1.
+def short_past_neg(dict_verb):
+    return [spn[:-1] + 'かった' for spn in short_present_neg(dict_verb)]
 
 
 # Given a verb in て-form, returns its possible dictionary forms.
