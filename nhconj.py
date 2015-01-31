@@ -309,10 +309,13 @@ def _run_command(func, args):
             if args[0].endswith('る'):
                 result1 = func({ 'dict_verb': args[0], 'is_ru_verb': True })
                 result2 = func({ 'dict_verb': args[0], 'is_ru_verb': False })
-                result = [
-                    '(if る-verb) ' + result1,
-                    '(if う-verb) ' + result2
-                ]
+                if result1 != result2:
+                    result = [
+                        '(if る-verb) ' + result1,
+                        '(if う-verb) ' + result2
+                    ]
+                else:
+                    result = [result1]
             else:
                 result = [func({ 'dict_verb': args[0], 'is_ru_verb': False })]
         else:
