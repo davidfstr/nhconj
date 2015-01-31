@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # Conjugates verbs and adjectives in Japanese.
 # 
@@ -28,13 +27,7 @@ def main():
             else:
                 cmd = args[0]
                 if cmd in globals():
-                    try:
-                        result = globals()[cmd](*args[1:])
-                    except Exception as e:
-                        traceback.print_exc()
-                    else:
-                        if result is not None:
-                            print(result)
+                    _run_command(globals()[cmd], args[1:])
                 else:
                     print('*** Unknown command: ' + cmd)
     except KeyboardInterrupt as e:
@@ -45,6 +38,33 @@ def main():
         # User typed Control-D
         print()
         pass
+
+def _run_command(func, args):
+    try:
+        if hasattr(func, 'expects_verb_entry'):
+            if args[0].endswith('る'):
+                result1 = func({ 'dict_verb': args[0], 'is_ru_verb': True })
+                result2 = func({ 'dict_verb': args[0], 'is_ru_verb': False })
+                result = [
+                    '(if る-verb) ' + result1,
+                    '(if う-verb) ' + result2
+                ]
+            else:
+                result = [func({ 'dict_verb': args[0], 'is_ru_verb': False })]
+        else:
+            result = func(*args)
+    except Exception as e:
+        traceback.print_exc()
+    else:
+        if result is not None:
+            print(result)
+
+
+# Decorator to mark CLI functions that expect a verb entry rather
+# than just a plain string.
+def expects_verb_entry(func):
+    func.expects_verb_entry = True
+    return func
 
 
 HIRAGANA_COLS = 'aiueo'
@@ -90,94 +110,109 @@ def unromaji(romaji_character_pair):
 
 # Given a verb in dictionary form, returns its possible stem-forms.
 # Rules are based on Genki I, 2nd Ed, §3.1.
-def stem(dict_verb):
+@expects_verb_entry
+def stem(verb_entry):
+    dict_verb = verb_entry['dict_verb']
+    
     if dict_verb[-2:] in ['する']:
-        return [dict_verb[:-2] + 'し']
+        return dict_verb[:-2] + 'し'
     if dict_verb[-2:] in ['くる']:
-        return [dict_verb[:-2] + 'き']
+        return dict_verb[:-2] + 'き'
     
     if dict_verb[-1] in ['る']:
-        return [
-            '(if る-verb) ' + dict_verb[:-1],
-            '(if う-verb) ' + dict_verb[:-1] + 'り'
-        ]
+        if verb_entry['is_ru_verb']:
+            return dict_verb[:-1]
+        else:
+            return dict_verb[:-1] + 'り'
     
     # ~u -> ~i
-    return [_replace_vowel_suffix(dict_verb, 'u', 'i')]
+    return _replace_vowel_suffix(dict_verb, 'u', 'i')
 
 def _replace_vowel_suffix(dict_verb, old_vowel, new_vowel):
     last = romaji(dict_verb[-1])
     if last[-1] != old_vowel:
         raise ValueError(
-            'Expected verb in dictionary form: ' + dict_verb)
+            'Expected verb to end with vowel "' + old_vowel + '": ' + dict_verb)
     last = last[:-1] + new_vowel
     last = unromaji(last)
     return dict_verb[:-1] + last
 
 
 # Rules are based on Genki I, 2nd Ed, §3.1.
-def long_present_aff(dict_verb):
-    return [s + 'ます' for s in stem(dict_verb)]
+@expects_verb_entry
+def long_present_aff(verb_entry):
+    return stem(verb_entry) + 'ます'
 
 
 # Rules are based on Genki I, 2nd Ed, §3.1.
-def long_present_neg(dict_verb):
-    return [s + 'ません' for s in stem(dict_verb)]
+@expects_verb_entry
+def long_present_neg(verb_entry):
+    return stem(verb_entry) + 'ません'
 
 
 # Rules are based on Genki I, 2nd Ed, §4.4.
-def long_past_aff(dict_verb):
-    return [s + 'ました' for s in stem(dict_verb)]
+@expects_verb_entry
+def long_past_aff(verb_entry):
+    return stem(verb_entry) + 'ました'
 
 
 # Given a verb in dictionary form, returns its possible past-negative forms.
 # Rules are based on Genki I, 2nd Ed, §4.4.
-def long_past_neg(dict_verb):
-    return [s + 'ませんでした' for s in stem(dict_verb)]
+@expects_verb_entry
+def long_past_neg(verb_entry):
+    return stem(verb_entry) + 'ませんでした'
 
 
 # Rules are based on Genki I, 2nd Ed, §8.1.
-def short_present_aff(dict_verb):
-    return [dict_verb]
+@expects_verb_entry
+def short_present_aff(verb_entry):
+    return verb_entry['dict_verb']
 
 
 # Rules are based on Genki I, 2nd Ed, §8.1.
-def short_present_neg(dict_verb):
+@expects_verb_entry
+def short_present_neg(verb_entry):
+    dict_verb = verb_entry['dict_verb']
+    
     if dict_verb[-2:] in ['する']:
-        return [dict_verb[:-2] + 'しない']
+        return dict_verb[:-2] + 'しない'
     if dict_verb[-2:] in ['くる']:
-        return [dict_verb[:-2] + 'こない']
+        return dict_verb[:-2] + 'こない'
     if dict_verb == 'ある':
-        return ['ない']
+        return 'ない'
     
     if dict_verb[-1] in ['る']:
-        return [
-            '(if る-verb) ' + dict_verb[:-1] + 'ない',
-            '(if う-verb) ' + dict_verb[:-1] + 'らない'
-        ]
+        if verb_entry['is_ru_verb']:
+            return dict_verb[:-1] + 'ない'
+        else:
+            return dict_verb[:-1] + 'らない'
     
     # ~u -> ~anai
-    return [_replace_vowel_suffix(dict_verb, 'u', 'a') + 'ない']
+    return _replace_vowel_suffix(dict_verb, 'u', 'a') + 'ない'
 
 
 # Rules are based on Genki I, 2nd Ed, §9.1.
-def short_past_aff(dict_verb):
-    return [_replace_vowel_suffix(v_te, 'e', 'a') for v_te in te(dict_verb)]
+@expects_verb_entry
+def short_past_aff(verb_entry):
+    return _replace_vowel_suffix(te(verb_entry), 'e', 'a')
 
 
 # Rules are based on Genki I, 2nd Ed, §9.1.
-def short_past_neg(dict_verb):
-    return [spn[:-1] + 'かった' for spn in short_present_neg(dict_verb)]
+@expects_verb_entry
+def short_past_neg(verb_entry):
+    return short_present_neg(verb_entry)[:-1] + 'かった'
 
 
 # Rules are based on Genki I, 2nd Ed, §11.1.
-def tai(dict_verb):
-    return [s + 'たい' for s in stem(dict_verb)]
+@expects_verb_entry
+def tai(verb_entry):
+    return stem(verb_entry) + 'たい'
 
 
 # Rules are based on Genki I, 2nd Ed, §11.2.
-def tari(dict_verb):
-    return [spa + 'り' for spa in short_present_aff(dict_verb)]
+@expects_verb_entry
+def tari(verb_entry):
+    return short_present_aff(verb_entry) + 'り'
 
 
 # Given a verb in て-form, returns its possible dictionary forms.
@@ -247,35 +282,38 @@ def unte(te_form):
 
 # Given a verb in dictionary form, returns its possible て-forms.
 # Rules are based on Genki I, 2nd Ed, §6.1.
-def te(dict_verb):
+@expects_verb_entry
+def te(verb_entry):
+    dict_verb = verb_entry['dict_verb']
+    
     if dict_verb[-2:] in ['する']:
-        return [dict_verb[:-2] + 'して']
+        return dict_verb[:-2] + 'して'
     if dict_verb[-2:] in ['くる']:
-        return [dict_verb[:-2] + 'きて']
+        return dict_verb[:-2] + 'きて'
     
     if dict_verb in ['いく', '行く']:
-        return [dict_verb[:-1] + 'って']
+        return dict_verb[:-1] + 'って'
     
     if dict_verb[-1] in ['る']:
-        return [
-            '(if る-verb) ' + dict_verb[:-1] + 'て',
-            '(if う-verb) ' + dict_verb[:-1] + 'って'
-        ]
+        if verb_entry['is_ru_verb']:
+            return dict_verb[:-1] + 'て'
+        else:
+            return dict_verb[:-1] + 'って'
     
     if dict_verb[-1] in ['う', 'つ', 'る']:
-        return [dict_verb[:-1] + 'って']
+        return dict_verb[:-1] + 'って'
     if dict_verb[-1] in ['む', 'ぶ', 'ぬ']:
-        return [dict_verb[:-1] + 'んで']
+        return dict_verb[:-1] + 'んで'
     if dict_verb[-1] in ['く']:
-        return [dict_verb[:-1] + 'いて']
+        return dict_verb[:-1] + 'いて'
     if dict_verb[-1] in ['ぐ']:
-        return [dict_verb[:-1] + 'いで']
+        return dict_verb[:-1] + 'いで'
     if dict_verb[-1] in ['す']:
-        return [dict_verb[:-1] + 'して']
+        return dict_verb[:-1] + 'して'
     
     raise ValueError(
         'Expected verb in dictionary form: ' + dict_verb)
-    
+
 
 def repeat(cmd):
     if cmd not in globals():
@@ -287,13 +325,7 @@ def repeat(cmd):
         if args == ['']:
             break
         else:
-            try:
-                result = globals()[cmd](*args)
-            except Exception as e:
-                traceback.print_exc()
-            else:
-                if result is not None:
-                    print(result)
+            _run_command(globals()[cmd], args)
 
 
 def quit():
