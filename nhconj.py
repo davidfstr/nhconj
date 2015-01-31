@@ -16,8 +16,8 @@ def expects_verb_entry(func):
     return func
 
 
-HIRAGANA_COLS = 'aiueo'
-HIRAGANA_ROWS = (
+_HIRAGANA_COLS = 'aiueo'
+_HIRAGANA_ROWS = (
     ('' , 'あいうえお'),
     ('k', 'かきくけこ'),
     ('s', 'さしすせそ'),
@@ -36,18 +36,18 @@ HIRAGANA_ROWS = (
     ('p', 'ぱぴぷぺぽ'),
 )
 
-ROMAJI_FOR_KANA = {};
-ROMAJI_FOR_KANA['ん'] = 'n'
-for (prefix, kanas) in HIRAGANA_ROWS:
-    for i in range(len(HIRAGANA_COLS)):
-        romaji = prefix + HIRAGANA_COLS[i]
+_ROMAJI_FOR_KANA = {};
+_ROMAJI_FOR_KANA['ん'] = 'n'
+for (prefix, kanas) in _HIRAGANA_ROWS:
+    for i in range(len(_HIRAGANA_COLS)):
+        romaji = prefix + _HIRAGANA_COLS[i]
         kana = kanas[i]
-        ROMAJI_FOR_KANA[kana] = romaji
+        _ROMAJI_FOR_KANA[kana] = romaji
 
-KANA_FOR_ROMAJI = {rj : kana for (kana, rj) in ROMAJI_FOR_KANA.items()}
+_KANA_FOR_ROMAJI = {rj : kana for (kana, rj) in _ROMAJI_FOR_KANA.items()}
 
 def romaji(kana_character):
-    romaji = ROMAJI_FOR_KANA.get(kana_character)
+    romaji = _ROMAJI_FOR_KANA.get(kana_character)
     if romaji is not None:
         return romaji
     else:
@@ -55,7 +55,7 @@ def romaji(kana_character):
             'Expected single kana character: ' + kana_character)
 
 def unromaji(romaji_character_pair):
-    kana = KANA_FOR_ROMAJI.get(romaji_character_pair)
+    kana = _KANA_FOR_ROMAJI.get(romaji_character_pair)
     if kana is not None:
         return kana
     else:
