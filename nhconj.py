@@ -215,6 +215,7 @@ def volitional(verb_entry):
 
 
 # Rules are based on Genki I, 2nd Ed, §21.1.
+# NOTE: Passive forms of verbs themselves conjugate as regular る-verbs.
 @expects_verb_entry
 def passive(verb_entry):
     dict_verb = verb_entry['dict_verb']
@@ -347,6 +348,13 @@ def te(verb_entry):
     
     raise ValueError(
         'Expected verb in dictionary form: ' + dict_verb)
+
+
+# Observed in wild, and explained on:
+# http://www.guidetojapanese.org/learn/grammar/compound
+@expects_verb_entry
+def te_neg(verb_entry):
+    return short_present_neg(verb_entry)[:-1] + 'くて'
 
 # ------------------------------------------------------------------------------
 # CLI

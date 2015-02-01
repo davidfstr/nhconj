@@ -144,6 +144,10 @@ class TestNjconj(unittest.TestCase):
         self.assertEqual(nhconj.te(ve('行く')), '行って') # exception
         self.assertEqual(nhconj.te(ve('およぐ')), 'およいで')
         self.assertEqual(nhconj.te(ve('はなす')), 'はなして')
+    
+    def test_te_neg(self):
+        # 入れる -> 入れなくて も
+        self.assertEqual(nhconj.te_neg(ve('入れる＋')), '入れなくて')
 
 def ve(dict_verb_descriptor):
     if dict_verb_descriptor[-1] in '+＋':
