@@ -89,6 +89,8 @@ def _replace_vowel_suffix(dict_verb, old_vowel, new_vowel):
         raise ValueError(
             'Expected verb to end with vowel "' + old_vowel + '": ' + dict_verb)
     last = last[:-1] + new_vowel
+    if len(last) == 1:    # exception: [u] -> [w*]
+        last = 'w' + last
     last = unromaji(last)
     return dict_verb[:-1] + last
 
@@ -168,6 +170,68 @@ def tai(verb_entry):
 @expects_verb_entry
 def tari(verb_entry):
     return short_past_aff(verb_entry) + 'り'
+
+
+# Rules are based on Genki I, 2nd Ed, §13.1.
+# Can..., Has the ability to...
+@expects_verb_entry
+def potential(verb_entry):
+    dict_verb = verb_entry['dict_verb']
+    
+    if dict_verb[-2:] in ['する']:
+        return dict_verb[:-2] + 'できる'
+    if dict_verb[-2:] in ['くる']:
+        return dict_verb[:-2] + 'こられる'
+    
+    if dict_verb[-1] in ['る']:
+        if verb_entry['is_ru_verb']:
+            return dict_verb[:-1] + 'られる'
+        else:
+            return dict_verb[:-1] + 'れる'
+    
+    # ~u -> ~eru
+    return _replace_vowel_suffix(dict_verb, 'u', 'e') + 'る'
+
+
+# Rules are based on Genki I, 2nd Ed, §15.1.
+# Lets... [casual]
+@expects_verb_entry
+def volitional(verb_entry):
+    dict_verb = verb_entry['dict_verb']
+    
+    if dict_verb[-2:] in ['する']:
+        return dict_verb[:-2] + 'しよう'
+    if dict_verb[-2:] in ['くる']:
+        return dict_verb[:-2] + 'こよう'
+    
+    if dict_verb[-1] in ['る']:
+        if verb_entry['is_ru_verb']:
+            return dict_verb[:-1] + 'よう'
+        else:
+            return dict_verb[:-1] + 'ろう'
+    
+    # ~u -> ~ou
+    return _replace_vowel_suffix(dict_verb, 'u', 'o') + 'う'
+
+
+# Rules are based on Genki I, 2nd Ed, §21.1.
+@expects_verb_entry
+def passive(verb_entry):
+    dict_verb = verb_entry['dict_verb']
+    
+    if dict_verb[-2:] in ['する']:
+        return dict_verb[:-2] + 'される'
+    if dict_verb[-2:] in ['くる']:
+        return dict_verb[:-2] + 'こられる'
+    
+    if dict_verb[-1] in ['る']:
+        if verb_entry['is_ru_verb']:
+            return dict_verb[:-1] + 'られる'
+        else:
+            return dict_verb[:-1] + 'られる'
+    
+    # ~u -> ~areru
+    return _replace_vowel_suffix(dict_verb, 'u', 'a') + 'れる'
 
 
 # Given a verb in て-form, returns its possible dictionary forms.

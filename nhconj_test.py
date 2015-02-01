@@ -103,6 +103,28 @@ class TestNjconj(unittest.TestCase):
         self.assertEqual(nhconj.tari(ve('およぐ')), 'およいだり')
         self.assertEqual(nhconj.tari(ve('はなす')), 'はなしたり')
     
+    def test_potential(self):
+        # TODO: Input tests from Genki
+        pass
+    
+    def test_volitional(self):
+        # TODO: Input tests from Genki
+        pass
+    
+    def test_passive(self):
+        self.assertEqual(nhconj.passive(ve('するー')), 'される')
+        self.assertEqual(nhconj.passive(ve('くるー')), 'こられる')
+        self.assertEqual(nhconj.passive(ve('たべる＋')), 'たべられる')
+        self.assertEqual(nhconj.passive(ve('いく')), 'いかれる')
+        self.assertEqual(nhconj.passive(ve('まつ')), 'またれる')
+        self.assertEqual(nhconj.passive(ve('よむ')), 'よまれる')
+        self.assertEqual(nhconj.passive(ve('およぐ')), 'およがれる')
+        self.assertEqual(nhconj.passive(ve('かう')), 'かわれる')
+        self.assertEqual(nhconj.passive(ve('はなす')), 'はなされる')
+        self.assertEqual(nhconj.passive(ve('しぬ')), 'しなれる')
+        self.assertEqual(nhconj.passive(ve('とるー')), 'とられる')
+        self.assertEqual(nhconj.passive(ve('あそぶ')), 'あそばれる')
+    
     def test_te(self):
         self.assertEqual(nhconj.te(ve('するー')), 'して')
         self.assertEqual(nhconj.te(ve('くるー')), 'きて')
