@@ -234,6 +234,21 @@ def passive(verb_entry):
     return _replace_vowel_suffix(dict_verb, 'u', 'a') + 'れる'
 
 
+# Shortened form of 〜てしまう, observed in wild, and explained on:
+# http://everything2.com/title/Japanese+verb+inflection+summary
+# Expresses regret...
+def chau(verb_entry):
+    return te(verb_entry)[:-1] + 'ちゃ'
+
+
+# NOTE: Disabled until I see this in the wild.
+## Shortened form of 〜てしまう, and explained on:
+## http://everything2.com/title/Japanese+verb+inflection+summary
+## Expresses regret...
+#def chimau(verb_entry):
+#    return te(verb_entry)[:-1] + 'ちまう'
+
+
 # Given a verb in て-form, returns its possible dictionary forms.
 # 
 # Also, given an adjective in て-form, returns its single possible

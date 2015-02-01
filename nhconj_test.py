@@ -125,6 +125,10 @@ class TestNjconj(unittest.TestCase):
         self.assertEqual(nhconj.passive(ve('とるー')), 'とられる')
         self.assertEqual(nhconj.passive(ve('あそぶ')), 'あそばれる')
     
+    def test_chau(self):
+        # 入る -> 入っちゃ います
+        self.assertEqual(nhconj.chau(ve('入るー')), '入っちゃ')
+    
     def test_te(self):
         self.assertEqual(nhconj.te(ve('するー')), 'して')
         self.assertEqual(nhconj.te(ve('くるー')), 'きて')
