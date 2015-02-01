@@ -89,7 +89,7 @@ def _replace_vowel_suffix(dict_verb, old_vowel, new_vowel):
         raise ValueError(
             'Expected verb to end with vowel "' + old_vowel + '": ' + dict_verb)
     last = last[:-1] + new_vowel
-    if len(last) == 1:    # exception: [u] -> [w*]
+    if old_vowel == 'u' and last in ['a', 'o', 'u']:    # exception: [u] -> [w*]
         last = 'w' + last
     last = unromaji(last)
     return dict_verb[:-1] + last
